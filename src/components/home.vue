@@ -5,12 +5,12 @@
                 <input type="text" class="form-control full-width" autofocus placeholder="Enter symbol..." v-model="symbol" v-on:keyup.enter="search"/>
             </div>
             <div class="col-2">
-                <input type="button" class="btn btn-primary full-width" value="Go" v-on:click="search" />
+                <input type="button" class="btn btn-primary full-width" value="Go" v-on:click="search1" />
             </div>
         </div>
         <tabs-button @getdata="search" :selected="symbol" ></tabs-button>
         <stock-quote v-bind:stock="stock" v-bind:graph="graph"></stock-quote>
-        <div>{{graph}}</div>
+      
        <div class="alert alert-danger" role="alert" v-if="error">
          <strong>Error!</strong> {{this.error}}
        </div>
@@ -62,6 +62,11 @@ module.exports = {
     },
     search(item) {
         this.symbol = item;
+        this.getGraphData()
+        this.getQuote()
+    },
+    search1() {
+        
         this.getGraphData()
         this.getQuote()
     },

@@ -1,10 +1,10 @@
 <template>
-    <aside>
+    <aside >
         <div class="item">
             <div class="item-content-block">
                 <div class="block-title">Select Companies</div>
             </div>
-            <div class="item-content-block tags">
+            <div class="item-content-block tags" style="max-width:90%;overflow:scroll;max-height:15%">
                 <span style="margin-right: 5px"
                       v-for="item in companies"
                       @click="selectedCompany(item) "
