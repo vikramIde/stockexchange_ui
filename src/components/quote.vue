@@ -20,10 +20,6 @@
                         <div class="col-6">{{stock.change}}</div>
                     </div>
                     <div class="row">
-                        <div class="col-6">Change (%):</div>
-                        <div class="col-6">{{stock.changePercent}}</div>
-                    </div>
-                    <div class="row">
                         <div class="col-6">Latest Time:</div>
                         <div class="col-6">{{stock.latestTime}}</div>
                     </div>
@@ -45,7 +41,8 @@ module.exports = {
   props: ["stock", "graph"],
   data() {
     return {
-      width: 0
+      width: 0,
+      companyName:''
     };
   },
   watch: {
@@ -85,12 +82,20 @@ module.exports = {
 
       gCrosshair.drawGraph(
         this.graph,
-        this.stock.companyName,
+        this.companyName,
         this.width,
         x,
         y
       );
-    }
+    },
+    getCompanyDetails() {
+      let url = `https://api.iextrading.com/1.0/stock/${this.symbol}/quote`;
+      this.init();
+      this.$http
+        .get(url)
+        .then(this.getGraphData)
+        .catch(this.handleErrors);
+    },
   }
 };
 </script>

@@ -8,24 +8,23 @@
                 <input type="button" class="btn btn-primary full-width" value="Go" v-on:click="search" />
             </div>
         </div>
-        
-       <stock-quote v-bind:stock="stock" v-bind:graph="graph"></stock-quote>
+        <tabs-button @getdata="search" :selected="symbol" ></tabs-button>
+        <stock-quote v-bind:stock="stock" v-bind:graph="graph"></stock-quote>
+        <div>{{graph}}</div>
        <div class="alert alert-danger" role="alert" v-if="error">
          <strong>Error!</strong> {{this.error}}
        </div>
-
        <p class="small bottom">Data provided for free by
         <a href="https://iextrading.com/developer" target="_blank">IEX</a>.
         <br/> By using this application you agree to
         <a href="https://iextrading.com/api-exhibit-a" target="_blank">IEX terms of service</a>.
        </p>
-
     </div>
 </template>
 <script>
 //include the quote component
 var Quote = require("./quote.vue");
-
+var Tabs = require("./tabsButtons.vue");
 //export the needed properties
 module.exports = {
   //the data model (props)
@@ -33,12 +32,15 @@ module.exports = {
     return {
       stock: {},
       graph: {},
-      error: ""
+      error: "",
+      symbol:"",
+      gItem:''
     };
   },
   //declare the included components, used in html
   components: {
-    "stock-quote": Quote
+    "stock-quote": Quote,
+    "tabs-button": Tabs,
   },
   methods: {
     //init method, initialize props
@@ -48,24 +50,28 @@ module.exports = {
       this.error = "";
     },
     //search method, calls API
-    search() {
+    getQuote() {
       let url = `https://api.iextrading.com/1.0/stock/${this.symbol}/quote`;
-
-      this.init();
+      // this.init();
       this.$http
         .get(url)
-        .then(this.getGraphData)
+        .then(result=>{
+          this.stock = result.data;
+        })
         .catch(this.handleErrors);
     },
+    search(item) {
+        this.symbol = item;
+        this.getGraphData()
+        this.getQuote()
+    },
     //gets chart data from the API
-    getGraphData(result) {
-      let gUrl = `https://api.iextrading.com/1.0/stock/${this.symbol}/chart/1m`;
-      this.stock = result.data;
-
+    getGraphData() {
+      let gUrl = `http://localhost:3000/stock/?symbol=${this.symbol}`;
       this.$http
         .get(gUrl)
         .then(result => {
-          this.graph = result.data;
+          this.graph = result.data.data[0].attributes;
         })
         .catch(this.handleErrors);
     },
@@ -76,7 +82,21 @@ module.exports = {
       } else {
         this.error = "There was an error retrieving the data...";
       }
+    },
+    getDefault(){
+      let gUrl = `http://localhost:3000/stock/default`;
+      this.$http
+        .get(gUrl)
+        .then(result => {
+          this.graph = result.data.data[0].attributes;
+          this.symbol = this.graph[0].symbol
+          this.getQuote()
+        })
+        .catch(this.handleErrors);
     }
+  },
+  mounted(){
+    this.getDefault()
   }
 };
 </script>

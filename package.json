@@ -1,5 +1,5 @@
 {
-  "name": "electron-stock-market",
+  "name": "stock-exchange",
   "version": "1.0.0",
   "main": "./main",
   "private": true,
